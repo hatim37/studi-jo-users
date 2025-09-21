@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 import com.ecom.users.clients.UserRestValidation;
+import com.ecom.users.dto.UserActivationDto;
 import com.ecom.users.dto.ValidationDto;
 import com.ecom.users.entity.Role;
 import com.ecom.users.entity.User;
@@ -89,6 +90,15 @@ public class UserService {
         Role addRole = roleRepository.findByLibelle(role).orElseThrow(()-> new UserNotFoundException("Role introuvable"));
         user.getRoles().add(addRole);
         userRepository.save(user);
+    }
+
+    public void activationUser(UserActivationDto userActivationDto) {
+        Optional<User> optionalUser = this.userRepository.findById(userActivationDto.getUserId());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setActive(true);
+            userRepository.save(user);
+        }
     }
 
 
