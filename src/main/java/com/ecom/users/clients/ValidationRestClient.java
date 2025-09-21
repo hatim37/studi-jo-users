@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "validation-service", url = "${validation.service.url}")
-public interface UserRestValidation {
+public interface ValidationRestClient {
 
     @PostMapping("/_internal/validation-send")
     @CircuitBreaker(name="validation", fallbackMethod = "getDefaultValidation")

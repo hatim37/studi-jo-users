@@ -5,11 +5,13 @@ import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import com.ecom.users.clients.UserRestValidation;
+import com.ecom.users.clients.OrdersRestClient;
+import com.ecom.users.clients.ValidationRestClient;
 import com.ecom.users.dto.UserActivationDto;
 import com.ecom.users.dto.ValidationDto;
 import com.ecom.users.entity.Role;
 import com.ecom.users.entity.User;
+import com.ecom.users.model.Order;
 import com.ecom.users.model.Validation;
 import com.ecom.users.repository.RoleRepository;
 import com.ecom.users.repository.UserRepository;
@@ -29,14 +31,16 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenTechnicService tokenTechnicService;
-    private final UserRestValidation userRestValidation;
+    private final ValidationRestClient validationRestClient;
+    private final OrdersRestClient ordersRestClient;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenTechnicService tokenTechnicService, UserRestValidation userRestValidation) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenTechnicService tokenTechnicService, ValidationRestClient validationRestClient, OrdersRestClient ordersRestClient) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenTechnicService = tokenTechnicService;
-        this.userRestValidation = userRestValidation;
+        this.validationRestClient = validationRestClient;
+        this.ordersRestClient = ordersRestClient;
     }
 
     public ResponseEntity<?> registration(User user) throws NoSuchAlgorithmException {
@@ -68,11 +72,15 @@ public class UserService {
         user = this.userRepository.save(user);
 
         //on fait une demande de validation par mail
-        Validation validationId = this.userRestValidation.sendValidation("Bearer "+this.tokenTechnicService.getTechnicalToken(),new ValidationDto(user.getId(),user.getUsername(), null, user.getEmail(), "registration"));
+        Validation validationId = this.validationRestClient.sendValidation("Bearer "+this.tokenTechnicService.getTechnicalToken(),new ValidationDto(user.getId(),user.getUsername(), null, user.getEmail(), "registration"));
         if(validationId.getId()==null){
             throw new UserNotFoundException("Service indisponible");
         }
 
+        //on initialise une commande
+        Order order = new Order();
+        order.setUserId((long) user.getId());
+        this.ordersRestClient.createOrder("Bearer "+this.tokenTechnicService.getTechnicalToken(),order);
         return new ResponseEntity<>(Map.of("message", "validation", "id", validationId.getId().toString()), HttpStatus.CREATED);
     }
 
