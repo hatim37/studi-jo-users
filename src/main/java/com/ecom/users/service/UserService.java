@@ -8,6 +8,7 @@ import java.util.Base64;
 import com.ecom.users.clients.OrdersRestClient;
 import com.ecom.users.clients.ValidationRestClient;
 import com.ecom.users.dto.UserActivationDto;
+import com.ecom.users.dto.UserDto;
 import com.ecom.users.dto.ValidationDto;
 import com.ecom.users.entity.Role;
 import com.ecom.users.entity.User;
@@ -20,9 +21,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -31,18 +34,19 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenTechnicService tokenTechnicService;
-    private final ValidationRestClient validationRestClient;
     private final OrdersRestClient ordersRestClient;
+    private final ValidationRestClient validationRestClient;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenTechnicService tokenTechnicService, ValidationRestClient validationRestClient, OrdersRestClient ordersRestClient) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, TokenTechnicService tokenTechnicService, OrdersRestClient ordersRestClient, ValidationRestClient validationRestClient) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenTechnicService = tokenTechnicService;
-        this.validationRestClient = validationRestClient;
         this.ordersRestClient = ordersRestClient;
+        this.validationRestClient = validationRestClient;
     }
 
+    @Transactional
     public ResponseEntity<?> registration(User user) throws NoSuchAlgorithmException {
         //Verification sur l'email saisi
         if(!user.getEmail().contains("@")){
@@ -61,7 +65,7 @@ public class UserService {
         user.setRoles(authorities);
         //ajoute le nom
         user.setName(user.getName());
-        //ajouter le prenom
+        //ajouter le prénom
         user.setUsername(user.getUsername());
         //ajoute le secretKey
         user.setSecretKey(this.generateAndEncryptKeyForDB());
@@ -76,11 +80,11 @@ public class UserService {
         if(validationId.getId()==null){
             throw new UserNotFoundException("Service indisponible");
         }
-
         //on initialise une commande
         Order order = new Order();
         order.setUserId((long) user.getId());
         this.ordersRestClient.createOrder("Bearer "+this.tokenTechnicService.getTechnicalToken(),order);
+
         return new ResponseEntity<>(Map.of("message", "validation", "id", validationId.getId().toString()), HttpStatus.CREATED);
     }
 
@@ -108,6 +112,25 @@ public class UserService {
             userRepository.save(user);
         }
     }
+
+    public User findById(Long id){
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User findByEmail(String email){
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public List<UserDto> findAll(){
+        return userRepository.findAll()
+                .stream()
+                .map(UserDto::new)
+                .collect(Collectors.toList());
+    }
+
+
+
+
 
 
 }
