@@ -22,5 +22,8 @@ public class UserController {
        return ResponseEntity.ok().body(this.userService.registration(user));
     }
 
-
+    @DeleteMapping(path = "/delete-user/{email}")
+    public ResponseEntity<?> removeUser(@PathVariable String email) {
+        return ResponseEntity.ok().body(this.userService.removeUser(email));
+    }
 }

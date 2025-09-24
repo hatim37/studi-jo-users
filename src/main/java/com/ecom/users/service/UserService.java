@@ -128,7 +128,16 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-
+    public ResponseEntity<?> removeUser (String email){
+        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("utilisateur introuvable"));
+        try {
+            user.getRoles().clear();
+            this.userRepository.delete(user);
+            return ResponseEntity.ok("Le compte est supprimé");
+        } catch (Exception e) {
+            throw new UserNotFoundException("Impossible de supprimer le compte");
+        }
+    }
 
 
 
