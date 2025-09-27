@@ -1,6 +1,7 @@
 package com.ecom.users.controller;
 
 
+import com.ecom.users.dto.NewPasswordDto;
 import com.ecom.users.dto.UserActivationDto;
 import com.ecom.users.dto.UserDto;
 import com.ecom.users.dto.UserLoginDto;
@@ -9,6 +10,7 @@ import com.ecom.users.repository.UserRepository;
 import com.ecom.users.service.TokenTechnicService;
 import com.ecom.users.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,5 +53,11 @@ public class MicroServiceController {
     public List<UserDto> getUsers() {
         return userService.findAll();
     }
+
+    @PostMapping(path = "/_internal/new-password")
+    public ResponseEntity<?> newPassword(@RequestBody NewPasswordDto newPasswordDto) {
+        return ResponseEntity.ok().body(this.userService.newPassword(newPasswordDto));
+    }
+
 }
 

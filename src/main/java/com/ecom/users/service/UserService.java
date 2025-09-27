@@ -7,9 +7,7 @@ import java.util.Base64;
 
 import com.ecom.users.clients.OrdersRestClient;
 import com.ecom.users.clients.ValidationRestClient;
-import com.ecom.users.dto.UserActivationDto;
-import com.ecom.users.dto.UserDto;
-import com.ecom.users.dto.ValidationDto;
+import com.ecom.users.dto.*;
 import com.ecom.users.entity.Role;
 import com.ecom.users.entity.User;
 import com.ecom.users.model.Order;
@@ -22,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 
 import java.util.*;
@@ -139,7 +138,36 @@ public class UserService {
         }
     }
 
+    public ResponseEntity<?> editPassword(EditPasswordDto editPasswordDto) {
+        User user = userRepository.findByEmail(editPasswordDto.getEmail()).orElseThrow(()-> new UserNotFoundException("Utilisateur introuvable"));
+        Validation validationId = this.validationRestClient.sendValidation("Bearer "+this.tokenTechnicService.getTechnicalToken(),new ValidationDto(user.getId(),user.getUsername(), null, user.getEmail(), "editPassword"));
+        if(validationId.getId()==null){
+            throw new UserNotFoundException("Service indisponible");
+        }
+        return new ResponseEntity<>(Map.of("message", "validation", "id", validationId.getId().toString()), HttpStatus.CREATED);
+    }
 
+    public ResponseEntity<?> newPassword(NewPasswordDto newPasswordDto) {
+
+        User user = userRepository.findById(newPasswordDto.getUserId()).orElseThrow(()-> new UserNotFoundException("Utilisateur introuvable"));
+        String passwordCrypte = this.passwordEncoder.encode(newPasswordDto.getPassword());
+        user.setPassword(passwordCrypte);
+        this.userRepository.save(user);
+        return ResponseEntity.ok("Votre mot de passe a été modifié avec succès !");
+    }
+
+    public ResponseEntity<?> updateUser(UserDto userDto) {
+        User user = userRepository.findById(userDto.getId()).orElseThrow(()-> new UserNotFoundException("Utilisateur introuvable"));
+        user.setName(userDto.getName());
+        user.setUsername(userDto.getUsername());
+        this.userRepository.save(user);
+        return ResponseEntity.ok("Votre compte a été modifié avec succès !");
+    }
+
+    public UserDto userByEmail(String email){
+        User user =  userRepository.findByEmail(email).get();
+        return new UserDto(user);
+    }
 
 
 }

@@ -53,6 +53,7 @@ public class ConfigurationSecurityApplication {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/registration")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/edit-password")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
