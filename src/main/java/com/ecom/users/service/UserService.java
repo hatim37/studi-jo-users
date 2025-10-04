@@ -92,9 +92,10 @@ public class UserService {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
         SecretKey secretKey = keyGen.generateKey();
-        // Encode en Base64 pour stockage en BDD
+        // Encode en Base64
         return Base64.getEncoder().encodeToString(secretKey.getEncoded());
     }
+
 
     public void addRoleToUser(String email, String role){
         User user = userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("Utilisateur introuvable"));

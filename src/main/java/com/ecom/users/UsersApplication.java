@@ -98,15 +98,15 @@ public class UsersApplication {
                             .secretKey(this.userService.generateAndEncryptKeyForDB())
                             .build();
                     userRepository.save(user);
-                    userService.addRoleToUser("admin@admin.com", "USER");
                     userService.addRoleToUser("admin@admin.com", "ADMIN");
+                    userService.addRoleToUser("admin@admin.com", "USER");
+                    userService.addRoleToUser("admin@admin.com", "AGENT");
                 } else {
                     log.info("Compte Admin déja present");
                 }
             } catch (Exception e) {
                 log.info(String.valueOf(e));
             }
-
 
         };
     }
