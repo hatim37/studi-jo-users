@@ -52,6 +52,7 @@ public class ConfigurationSecurityApplication {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/registration")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/edit-password")).permitAll()
                         .anyRequest().authenticated()

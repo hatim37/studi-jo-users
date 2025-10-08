@@ -51,7 +51,6 @@ public class MicroServiceController {
 
     @GetMapping(path = "/_internal/allUsers")
     public List<UserDto> getUsers() {
-        log.info("allusers");
         return userService.findAll();
     }
 

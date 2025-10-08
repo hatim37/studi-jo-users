@@ -96,7 +96,6 @@ public class UserService {
         return Base64.getEncoder().encodeToString(secretKey.getEncoded());
     }
 
-
     public void addRoleToUser(String email, String role){
         User user = userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("Utilisateur introuvable"));
         Role addRole = roleRepository.findByLibelle(role).orElseThrow(()-> new UserNotFoundException("Role introuvable"));

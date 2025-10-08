@@ -1,5 +1,6 @@
 package com.ecom.users.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-
+@Slf4j
 @Configuration
 public class JwtConfig {
 
@@ -16,7 +17,7 @@ public class JwtConfig {
         this.rsakeysConfig = rsakeysConfig;
     }
 
-    @Value("${SAS_JWK_URI}")
+    @Value("${sas.jwk.uri}")
     private String jwtUri;
 
     private RsakeysConfig rsakeysConfig;
@@ -36,7 +37,7 @@ public class JwtConfig {
     @Bean
     @Qualifier("resourceJwtDecoder")
     public JwtDecoder resourceJwtDecoder() {
-        //on récupère la key public pour décoder les JWT inter-service auprès du service Sécurty
+        //on récupère la key public pour décoder les JWT inter-service auprès du service Sécurity
         return NimbusJwtDecoder
                 .withJwkSetUri(jwtUri)
                 .build();
