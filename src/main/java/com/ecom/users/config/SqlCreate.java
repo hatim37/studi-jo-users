@@ -18,6 +18,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
+
 @RequiredArgsConstructor
 public class SqlCreate {
     @Value("${client.id}")
@@ -98,7 +99,5 @@ public class SqlCreate {
                 log.info(String.valueOf(e));
             }
         }
-
-
 
 }

@@ -32,5 +32,4 @@ public interface OrdersRestClient {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(orderFallback);
     }
 
-
 }

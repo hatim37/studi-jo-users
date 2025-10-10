@@ -40,7 +40,4 @@ public class AdminController {
         return ResponseEntity.ok().body(this.adminService.adminAddRoleUsers(userId, rolesNames));
     }
 
-
-
-
 }

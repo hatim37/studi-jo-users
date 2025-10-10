@@ -2,15 +2,13 @@ package com.ecom.users.model;
 
 
 import com.ecom.users.enums.OrderStatus;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
+import lombok.*;
+@Data
 @Getter
 @Setter
 @ToString
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
 
     private Long id;

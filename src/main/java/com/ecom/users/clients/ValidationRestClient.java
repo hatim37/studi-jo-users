@@ -21,6 +21,4 @@ public interface ValidationRestClient {
        validation.setId(null);
        return validation;
    }
-
-
 }
